@@ -1,0 +1,124 @@
+1) instalar django pip install django 
+2) crear las carpetas del proyecto django-admin startproject nombre del proyecto (si finaliza con un punto no creara una carpeta adicional)
+3)crear las carpetas de la app django-admin startapp nombre de la app 
+4)agregar el nombre de la app en settings
+5)crear la clase en models
+6)se importa la clase en admin y se registra para poder verlo en la interfaz 
+	from .models import nombre de la clase
+	admin.site.register(nombre de la clase)
+
+
+7) Se crea la base de datos de acuerdo al modelo 
+	python manage.py migrate
+	python manage.py makemigrations
+
+python manage.py makemigrations  # Genera los archivos de migración
+python manage.py migrate         # Aplica las migraciones a la base de datos
+
+8)crear super usuario
+	python manage.py createsuperuser
+9)correr el servidor
+	python manage.py runserver  
+10)instalar djangoRestFramework
+	pip install djangoRestframework
+11)importar en INSTALLER_APPS en settings rest_framework
+
+
+
+ahora se busca manipular los datos para que se puedan serializar
+✅ Permite convertir datos de la base de datos en JSON/XML
+✅ Facilita la comunicación entre sistemas a través de APIs
+✅ Hace que los datos sean legibles y transferibles a otros servicios
+
+12)crear archivo serializer.py 
+
+13)se importa serializers y el modelo
+
+	from rest_framework import serializers
+	from .models import Programmer
+
+14)se crea la clase para serializar
+
+
+class ProgrammerSerializers(serializers.ModelSerializer):
+    class Meta:
+        model=Programmer
+        fields = '__all__' #Indica que se deben serializar todos los campos del modelo.
+        
+
+
+✅ serializers.ModelSerializer permite crear serializadores fácilmente a partir de modelos Django.
+✅ fields = '__all__' serializa todos los campos del modelo.
+✅ Se usa en APIs Django REST Framework para convertir modelos en JSON y viceversa.
+
+
+15)en el archivo views se crea una clase que genera una vista que permita la interacción con la base de datos (CRUD)
+
+from rest_framework import viewsets
+from .serializer import ProgrammerSerializers
+from .models import Programmer
+
+
+class ProgrammerViewSet(viewsets.ModelViewSet):
+    queryset = Programmer.objects.all() 
+    serializer_class = ProgrammerSerializers
+
+16)se crea el archivo urls.py en api con el fin de crear las rutas o endpoints para las operaciones CRUD 
+
+
+from django.urls import path, include
+from rest_framework import routers
+from api import views
+
+router = routers.DefaultRouter() #Este router genera automáticamente las URLs necesarias para una API REST.
+router.register(r'programmers', views.ProgrammerViewSet ) #programmers' será la URL base de la API (ejemplo: http://localhost:8000/programmers/).
+#Django generará automáticamente las rutas para las operaciones CRUD de ProgrammerViewSet.
+
+
+17)incluirlo en el archivo urls del proyecto 
+
+	from django.urls import path, include
+
+se crea la nueva url pattern 
+
+
+
+	urlpatterns = [
+   	 	path('admin/', admin.site.urls),
+    		path('api/v1', include('api.urls')),
+    
+	]
+
+path('api/v1', include('api.urls')) agrega un prefijo api/v1 a todas las rutas definidas en api.urls.
+✅ Esto permite organizar las rutas y hacer que las APIs tengan un prefijo claro, como en el caso de la versión 1 (v1).
+✅ Es una buena práctica usar prefijos como api/v1 para indicar la versión de tu API o para organizar las rutas de forma estructurada.
+
+18) ejecutar el servidor
+
+19) generar documentación con coreapi
+
+instalar coreapi
+
+se importa y se agrega la ruta al path
+
+	from rest_framework.documentation import include_docs_urls
+
+	urlpatterns = [
+    		path('admin/', admin.site.urls),
+    		path('api/v1/', include('api.urls')),
+    		path('api/docs/', include_docs_urls(title='Api Documentation')),
+    
+	]
+
+Error 'AutoSchema' object has no attribute 'get_link'
+
+solución 
+en settings agregar 
+
+REST_FRAMEWORK = { 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema' }
+
+
+
+
+
+
