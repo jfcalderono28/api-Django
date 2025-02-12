@@ -94,6 +94,7 @@ path('api/v1', include('api.urls')) agrega un prefijo api/v1 a todas las rutas d
 ✅ Es una buena práctica usar prefijos como api/v1 para indicar la versión de tu API o para organizar las rutas de forma estructurada.
 
 18) ejecutar el servidor
+	python manage.py runserver  
 
 19) generar documentación con coreapi
 
